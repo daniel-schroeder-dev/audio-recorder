@@ -2,7 +2,7 @@
 <html lang="en-US">
     <head>
         <meta charset="UTF-8" />
-        <title>Web Dev Audio Example</title>
+        <title>Audio Recorder</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <style>
             li {
@@ -30,13 +30,10 @@
         <button id="record" disabled>Record</button>
         <button id="stop" disabled>Stop</button>
 
-        <main>
-
-        </main>
+        <main></main>
 
         <script>
             // See: https://web.dev/media-recording-audio/
-            // Use this on the Flask end to build an MP3: https://github.com/kkroening/ffmpeg-python
             const recordButton = document.querySelector("#record");
             const stopButton = document.querySelector("#stop");
             const mainElement = document.querySelector("main");
@@ -97,7 +94,7 @@
                     const downloadLink = document.createElement("a");
                     const url = URL.createObjectURL(new Blob(recordedChunks, { type: recordedChunks[0].type }));
                     downloadLink.href = url; 
-                    downloadLink.download = "test.webm";
+                    downloadLink.download = "voice-recording.webm";
                     downloadLink.style.display = "none";
                     mainElement.append(downloadLink);
                     downloadLink.click();
@@ -111,9 +108,6 @@
                 recordButton.addEventListener("click", e => {
                     mediaRecorder.start();
                 });
-
-
-
             }
         </script>
     </body>
