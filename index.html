@@ -5,6 +5,17 @@
         <title>Audio Recorder</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <style>
+            body {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 8px;
+            }
+
+            p {
+                margin: 4px;
+            }
+
             li {
                 border: 1px solid black;
                 margin: 8px;
@@ -24,13 +35,66 @@
                 margin: 12px 0;
                 padding: 12px;
             }
+
+            main {
+                margin-top: 8px;
+                display: flex;
+                flex-direction: column;
+                align-content: center;
+            }
+
+            #button-group {
+                margin-top: 12px;
+            }
+
+            #button-group button:first-child {
+                margin-right: 12px;
+            }
+
+            /* Loader taken from https://loading.io/css/ */
+
+            .lds-dual-ring {
+                display: inline-block;
+                width: 80px;
+                height: 80px;
+            }
+            .lds-dual-ring:after {
+                content: " ";
+                display: block;
+                width: 64px;
+                height: 64px;
+                margin: 8px;
+                border-radius: 50%;
+                border: 6px solid #7395ff;
+                border-color: #7395ff transparent #7395ff transparent;
+                animation: lds-dual-ring 1.2s linear infinite;
+            }
+            @keyframes lds-dual-ring {
+                0% {
+                    transform: rotate(0deg);
+                }
+                100% {
+                    transform: rotate(360deg);
+                }
+            }
         </style>
     </head>
     <body>
-        <button id="record" disabled>Record</button>
-        <button id="stop" disabled>Stop</button>
+        <h1>CWHQ Voice Recorder</h1>
 
-        <main></main>
+        <p>
+            Select your preferred audio device and then press the "Record" button to record an audio
+            file.
+        </p>
+        <p>Press "Stop" and you'll be prompted to save your recording.</p>
+        <p>If you want to make another recording, repeat the process!</p>
+
+        <div id="button-group">
+            <button id="record" disabled>Record</button>
+            <button id="stop" disabled>Stop</button>
+        </div>
+
+        <main><div class="lds-dual-ring"></div></main>
 
         <script>
             // See: https://web.dev/media-recording-audio/
@@ -48,6 +112,7 @@
             }
 
             function displayInputDevices(inputDevices) {
+                mainElement.innerHTML = "";
                 const section = document.createElement("section");
                 const h2 = document.createElement("h2");
                 const ul = document.createElement("ul");
@@ -70,6 +135,7 @@
             }
 
             function chooseInputDevice(event) {
+                mainElement.innerHTML = "<p>Press 'Record' to begin recording!</p>";
                 const constraints = {
                     audio: {
                         deviceId: event.target.dataset.deviceId,
@@ -77,7 +143,6 @@
                 };
                 navigator.mediaDevices.getUserMedia(constraints).then(registerMediaListeners);
                 recordButton.disabled = false;
-                stopButton.disabled = false;
             }
 
             function registerMediaListeners(stream) {
@@ -106,10 +171,13 @@
 
                 stopButton.addEventListener("click", (e) => {
                     mediaRecorder.stop();
+                    stopButton.disabled = true;
                 });
 
                 recordButton.addEventListener("click", (e) => {
                     mediaRecorder.start();
+                    stopButton.disabled = false;
+                    recordButton.disabled = true;
                 });
             }
         </script>
