@@ -4,7 +4,7 @@ This is a simple web app to record and download audio written for the kids at CW
 
 ## Usage
 
-Make sure to allow audio on the webpage, select your preferred input device, and hit "Record" to begin recording. Press "Stop" to stop recording and you'll be prompted to save the file locally. 
+Make sure to allow audio on the webpage, select your preferred input device, and hit "Record" to begin recording. Press "Stop" to stop recording and you'll be prompted to save the file locally.
 
 The app is running at [https://daniel-schroeder-dev.github.io/audio-recorder/](https://daniel-schroeder-dev.github.io/audio-recorder/) if you want to try it out!
 
@@ -14,8 +14,8 @@ The app is running at [https://daniel-schroeder-dev.github.io/audio-recorder/](h
 
 ## TODOS
 
-- Add some text to loading icon that lets users know that we're searching for audio devices.
-- Add some text/animation while recording is happening so users know they are being recorded.
+-   Add some text to loading icon that lets users know that we're searching for audio devices.
+-   Add some text/animation while recording is happening so users know they are being recorded.
 
 ## Contributing
 
@@ -24,4 +24,5 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 Please make sure to update tests as appropriate.
 
 ## License
+
 [MIT](https://choosealicense.com/licenses/mit/)
