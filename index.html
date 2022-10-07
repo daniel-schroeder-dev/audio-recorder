@@ -9,19 +9,51 @@
                 display: flex;
                 flex-direction: column;
                 align-items: center;
+                justify-content: center;
                 gap: 8px;
+                width: fit-content;
+                padding: 24px 64px;
+                height: 70vh;
+                margin: 24px auto 0px auto;
+                box-shadow: 0px -1px 7px 2px rgb(100 100 100 / 75%);
+                border: 1px solid #f2f2f2;
+            }
+
+            #top-container {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                height: 65%;
             }
 
             p {
+                align-self: flex-start;
+                text-align: justify;
+                max-width: 500px;
                 margin: 4px;
+                line-height: 1.4;
+            }
+
+            h1 {
+                margin-top: 0px;
+            }
+
+            h2 {
+                margin: 0;
+            }
+
+            ul {
+                list-style-type: none;
+                padding: 0;
             }
 
             li {
-                border: 1px solid black;
+                border: 1px solid #a7a7a7;
                 margin: 8px;
                 border-radius: 3px;
                 width: fit-content;
-                padding: 4px;
+                padding: 7px;
                 cursor: pointer;
             }
 
@@ -31,33 +63,46 @@
 
             section {
                 width: fit-content;
-                border: 1px solid blue;
-                margin: 12px 0;
-                padding: 12px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
             }
 
             main {
-                margin-top: 8px;
+                height: 35%;
                 display: flex;
                 flex-direction: column;
                 align-content: center;
+                position: relative;
+                flex-grow: 1;
+            }
+
+            button {
+                padding: 10px;
+                border-radius: 6px;
             }
 
             #button-group {
-                margin-top: 12px;
+                margin: 24px 0;
             }
 
             #button-group button:first-child {
                 margin-right: 12px;
             }
 
-            /* Loader taken from https://loading.io/css/ */
+            #record-message {
+                visibility: hidden;
+                align-self: center;
+            }
 
             .lds-dual-ring {
                 display: inline-block;
                 width: 80px;
                 height: 80px;
+                position: absolute;
+                left: calc(50% - 40px);
             }
+
             .lds-dual-ring:after {
                 content: " ";
                 display: block;
@@ -69,6 +114,7 @@
                 border-color: #7395ff transparent #7395ff transparent;
                 animation: lds-dual-ring 1.2s linear infinite;
             }
+
             @keyframes lds-dual-ring {
                 0% {
                     transform: rotate(0deg);
@@ -80,27 +126,31 @@
         </style>
     </head>
     <body>
-        <h1>CWHQ Voice Recorder</h1>
+        <div id="top-container">
+            <h1>CWHQ Voice Recorder</h1>
 
-        <p>
-            Select your preferred audio device and then press the "Record" button to record an audio
-            file.
-        </p>
-        <p>Press "Stop" and you'll be prompted to save your recording.</p>
-        <p>If you want to make another recording, repeat the process!</p>
+            <p>
+                Select your preferred audio device and then press the "Record" button to record an
+                audio file. Press "Stop" and you'll be prompted to save your recording. If you want
+                to make another recording, repeat the process!
+            </p>
 
-        <div id="button-group">
-            <button id="record" disabled>Record</button>
-            <button id="stop" disabled>Stop</button>
+            <div id="button-group">
+                <button id="record" disabled>Record</button>
+                <button id="stop" disabled>Stop</button>
+            </div>
+
+            <p id="record-message">Press 'Record' to begin recording!</p>
         </div>
 
-        <main><div class="lds-dual-ring"></div></main>
+        <main><div id="loader-icon" class="lds-dual-ring"></div></main>
 
         <script>
             // See: https://web.dev/media-recording-audio/
             const recordButton = document.querySelector("#record");
             const stopButton = document.querySelector("#stop");
             const mainElement = document.querySelector("main");
+            const recordMessage = document.querySelector("#record-message");
 
             navigator.mediaDevices.enumerateDevices().then(pickAudioDevice).catch(console.error);
 
@@ -135,7 +185,8 @@
             }
 
             function chooseInputDevice(event) {
-                mainElement.innerHTML = "<p>Press 'Record' to begin recording!</p>";
+                recordMessage.style.visibility = "visible";
+                document.querySelector("section").style.visibility = "hidden";
                 const constraints = {
                     audio: {
                         deviceId: event.target.dataset.deviceId,
@@ -147,7 +198,7 @@
 
             function registerMediaListeners(stream) {
                 const options = { mimeType: "audio/webm" };
-                const recordedChunks = [];
+                let recordedChunks = [];
                 const mediaRecorder = new MediaRecorder(stream, options);
 
                 mediaRecorder.addEventListener("dataavailable", (e) => {
@@ -170,11 +221,15 @@
                 });
 
                 stopButton.addEventListener("click", (e) => {
+                    recordMessage.style.visibility = "visible";
                     mediaRecorder.stop();
                     stopButton.disabled = true;
+                    recordButton.disabled = false;
+                    recordedChunks = [];
                 });
 
                 recordButton.addEventListener("click", (e) => {
+                    recordMessage.style.visibility = "hidden";
                     mediaRecorder.start();
                     stopButton.disabled = false;
                     recordButton.disabled = true;
