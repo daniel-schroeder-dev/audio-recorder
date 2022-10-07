@@ -4,9 +4,11 @@ This is a simple web app to record and download audio written for the kids at CW
 
 ## Usage
 
-Make sure to allow audio on the webpage, select your preferred input device, and hit "Record" to begin recording.
+Make sure to allow audio on the webpage, select your preferred input device, and hit "Record" to begin recording. Press "Stop" to stop recording and you'll be prompted to save the file locally. 
 
-Press "Stop" to stop recording and you'll be prompted to save the file locally. 
+The app is running at [https://daniel-schroeder-dev.github.io/audio-recorder/](https://daniel-schroeder-dev.github.io/audio-recorder/) if you want to try it out!
+
+## Example
 
 ![audio-recorder-usage example](audio-recorder-usage.gif)
 
