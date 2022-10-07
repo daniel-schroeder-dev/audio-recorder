@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en-US">
+    <head>
+        <meta charset="UTF-8" />
+        <title></title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    </head>
+    <body>
+        <h1>Hello, world!</h1>
+
+        <button id="record-button">Record</button>
+        <button id="stop-button">Stop</button>
+
+        <script>
+            const recordButton = document.querySelector("#record-button");
+            const stopButton = document.querySelector("#stop-button");
+
+            recordButton.addEventListener("click", recordAudio);
+            stopButton.addEventListener("click", stopAudio);
+
+            let mediaRecorder;
+            const recordedData = [];
+
+            async function recordAudio(event) {
+                let stream = null;
+
+                const contraints = {
+                    audio: true,
+                };
+
+                try {
+                    stream = await navigator.mediaDevices.getUserMedia(contraints);
+                    mediaRecorder = new MediaRecorder(stream);
+                    mediaRecorder.addEventListener("dataavailable", recordData);
+                    mediaRecorder.addEventListener("stop", buildBlob);
+                    mediaRecorder.start(1000);
+                } catch (err) {
+                    console.error(err);
+                }
+            }
+
+            function recordData(event) {
+                console.log(event.data);
+                recordedData.push(event.data);
+            }
+
+            function stopAudio(event) {
+                mediaRecorder.stop();
+            }
+
+            function buildBlob(event) {
+                const blob = new Blob(recordedData, { type: recordedData[0].type });
+                console.log("Full: ", blob);
+                const url = URL.createObjectURL(blob);
+                const linkElement = document.createElement("a");
+                linkElement.style = "display: none";
+                linkElement.href = url;
+                linkElement.download = "audio.webm";
+                linkElement.click();
+                window.URL.revokeObjectURL(url);
+            }
+        </script>
+    </body>
+</html>

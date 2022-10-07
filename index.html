@@ -2,70 +2,119 @@
 <html lang="en-US">
     <head>
         <meta charset="UTF-8" />
-        <title></title>
+        <title>Web Dev Audio Example</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <style>
+            li {
+                border: 1px solid black;
+                margin: 8px;
+                border-radius: 3px;
+                width: fit-content;
+                padding: 4px;
+                cursor: pointer;
+            }
+
+            li:hover {
+                background-color: #bcbcbc;
+            }
+
+            section {
+                width: fit-content;
+                border: 1px solid blue;
+                margin: 12px 0;
+                padding: 12px;
+            }
+        </style>
     </head>
     <body>
-        <h1>Hello, world!</h1>
+        <button id="record" disabled>Record</button>
+        <button id="stop" disabled>Stop</button>
 
-        <button id="record-button">Record</button>
-        <button id="stop-button">Stop</button>
+        <main>
+
+        </main>
 
         <script>
+            // See: https://web.dev/media-recording-audio/
+            // Use this on the Flask end to build an MP3: https://github.com/kkroening/ffmpeg-python
+            const recordButton = document.querySelector("#record");
+            const stopButton = document.querySelector("#stop");
+            const mainElement = document.querySelector("main");
 
-            const recordButton = document.querySelector("#record-button");
-            const stopButton = document.querySelector("#stop-button");
+            navigator.mediaDevices.enumerateDevices().then(pickAudioDevice).catch(console.error);
 
-            recordButton.addEventListener("click", recordAudio);
-            stopButton.addEventListener("click", stopAudio);
+            function pickAudioDevice(devices) {
+                const inputDevices = devices.filter((device) => device.kind === "audioinput" && device.label !== "Default");
+                displayInputDevices(inputDevices);
+            }
 
+            function displayInputDevices(inputDevices) {
+                const section = document.createElement("section");
+                const h2 = document.createElement("h2");
+                const ul = document.createElement("ul");
 
-            let mediaRecorder;
-            const recordedData = [];
-
-            async function recordAudio(event) {
-                let stream = null;
-
-                const contraints = {
-                    audio: true,
-                };
-
-                try {
-                    stream = await navigator.mediaDevices.getUserMedia(contraints);
-                    mediaRecorder = new MediaRecorder(stream);
-                    mediaRecorder.addEventListener("dataavailable", recordData);
-                    mediaRecorder.addEventListener("stop", buildBlob);
-                    mediaRecorder.start(1000);
-                    
-                } catch (err) {
-                    console.error(err);
+                h2.textContent = "Please choose your input device:";
+                
+                for (const inputDevice of inputDevices) {
+                    const li = document.createElement("li");
+                    li.textContent = inputDevice.label;
+                    li.dataset.deviceId = inputDevice.deviceId;
+                    ul.append(li);
                 }
 
+                ul.addEventListener("click", chooseInputDevice);
+
+                section.append(h2);
+                section.append(ul);
+
+                mainElement.append(section);
             }
 
-            function recordData(event) {
-                console.log(event.data);
-                recordedData.push(event.data);
+            function chooseInputDevice(event) {
+                const constraints = {
+                    audio: {
+                        deviceId: event.target.dataset.deviceId,
+                    },
+                };
+                navigator.mediaDevices.getUserMedia(constraints).then(registerMediaListeners);
+                recordButton.disabled = false;
+                stopButton.disabled = false;
             }
 
 
-            function stopAudio(event) {
-                mediaRecorder.stop();
-            }
+            function registerMediaListeners(stream) {
+                const options = { mimeType: "audio/webm" };
+                const recordedChunks = [];
+                const mediaRecorder = new MediaRecorder(stream, options);
 
-            function buildBlob(event) {
-                const blob = new Blob(recordedData, { type: recordedData[0].type });
-                console.log("Full: ", blob);
-                const url = URL.createObjectURL(blob);
-                const linkElement = document.createElement("a");
-                linkElement.style = "display: none";
-                linkElement.href = url;
-                linkElement.download = "audio.webm";
-                linkElement.click();
-                window.URL.revokeObjectURL(url);
-            }
+                mediaRecorder.addEventListener("dataavailable", e => {
+                    if (e.data.size > 0) {
+                        recordedChunks.push(e.data);
+                    }
+                });
 
-        
+                mediaRecorder.addEventListener("stop", e => {
+                    const downloadLink = document.createElement("a");
+                    const url = URL.createObjectURL(new Blob(recordedChunks, { type: recordedChunks[0].type }));
+                    downloadLink.href = url; 
+                    downloadLink.download = "test.webm";
+                    downloadLink.style.display = "none";
+                    mainElement.append(downloadLink);
+                    downloadLink.click();
+                    window.URL.revokeObjectURL(url); 
+                });
+
+                stopButton.addEventListener("click", e => {
+                    mediaRecorder.stop();
+                });
+
+                recordButton.addEventListener("click", e => {
+                    mediaRecorder.start();
+                });
+
+
+
+            }
         </script>
     </body>
 </html>
