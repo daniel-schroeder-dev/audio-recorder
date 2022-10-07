@@ -154,7 +154,11 @@
             const mainElement = document.querySelector("main");
             const recordMessage = document.querySelector("#record-message");
 
-            navigator.mediaDevices.enumerateDevices().then(pickAudioDevice).catch(console.error);
+            navigator.mediaDevices.getUserMedia({ audio: true }).then(() => {
+                navigator.mediaDevices.enumerateDevices().then(pickAudioDevice).catch(console.error);
+            });
+
+
 
             function pickAudioDevice(devices) {
                 const inputDevices = devices.filter(
