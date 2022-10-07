@@ -41,7 +41,9 @@
             navigator.mediaDevices.enumerateDevices().then(pickAudioDevice).catch(console.error);
 
             function pickAudioDevice(devices) {
-                const inputDevices = devices.filter((device) => device.kind === "audioinput" && device.label !== "Default");
+                const inputDevices = devices.filter(
+                    (device) => device.kind === "audioinput" && device.label !== "Default"
+                );
                 displayInputDevices(inputDevices);
             }
 
@@ -51,7 +53,7 @@
                 const ul = document.createElement("ul");
 
                 h2.textContent = "Please choose your input device:";
-                
+
                 for (const inputDevice of inputDevices) {
                     const li = document.createElement("li");
                     li.textContent = inputDevice.label;
@@ -78,34 +80,35 @@
                 stopButton.disabled = false;
             }
 
-
             function registerMediaListeners(stream) {
                 const options = { mimeType: "audio/webm" };
                 const recordedChunks = [];
                 const mediaRecorder = new MediaRecorder(stream, options);
 
-                mediaRecorder.addEventListener("dataavailable", e => {
+                mediaRecorder.addEventListener("dataavailable", (e) => {
                     if (e.data.size > 0) {
                         recordedChunks.push(e.data);
                     }
                 });
 
-                mediaRecorder.addEventListener("stop", e => {
+                mediaRecorder.addEventListener("stop", (e) => {
                     const downloadLink = document.createElement("a");
-                    const url = URL.createObjectURL(new Blob(recordedChunks, { type: recordedChunks[0].type }));
-                    downloadLink.href = url; 
+                    const url = URL.createObjectURL(
+                        new Blob(recordedChunks, { type: recordedChunks[0].type })
+                    );
+                    downloadLink.href = url;
                     downloadLink.download = "voice-recording.webm";
                     downloadLink.style.display = "none";
                     mainElement.append(downloadLink);
                     downloadLink.click();
-                    window.URL.revokeObjectURL(url); 
+                    window.URL.revokeObjectURL(url);
                 });
 
-                stopButton.addEventListener("click", e => {
+                stopButton.addEventListener("click", (e) => {
                     mediaRecorder.stop();
                 });
 
-                recordButton.addEventListener("click", e => {
+                recordButton.addEventListener("click", (e) => {
                     mediaRecorder.start();
                 });
             }
