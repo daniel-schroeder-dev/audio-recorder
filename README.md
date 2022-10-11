@@ -12,11 +12,6 @@ The app is running at [https://daniel-schroeder-dev.github.io/audio-recorder/](h
 
 ![audio-recorder-usage example](audio-recorder-usage.gif)
 
-## TODOS
-
--   Add some text to loading icon that lets users know that we're searching for audio devices.
--   Add some text/animation while recording is happening so users know they are being recorded.
-
 ## Contributing
 
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
